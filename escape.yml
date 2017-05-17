@@ -91,11 +91,40 @@ provides: []
 # "version", "project", "environment" and "deployment" which are automatically 
 # populated by Escape.
 #
-inputs: []
+inputs:
+- id: docker_image
+  type: string
+  friendly: Docker Image
+  description: > 
+      The name of the Docker image to build. Don't specify the repository here
+      (see 'Docker Repository')
+
+- id: docker_repository
+  type: string
+  default: ""
+  friendly: Docker Repository
+  description: > 
+      If set the image will be tagged with this repository and
+      pushed on every successful build.
+
+- id: docker_cmd
+  type: list[string]
+  default: ["docker"]
+  friendly: Docker Command
+  description: >
+      The Docker command to use (['docker'] by default). On GCP a value of
+      ['gcloud', 'docker', '--'] is recommended.
+
 
 # Output variables (see input variables for documentation)
 #
-outputs: []
+outputs:
+- id: image
+  type: string
+  friendly: Docker Image
+  description: >
+      The Docker image that this release produces. If docker_repository is set the 
+      value will be included. 
 
 # Metadata key value pairs.
 #
@@ -159,7 +188,7 @@ path: ""
 #
 pre_build: ""
 
-build: ""
+build: build_and_push_image.py
 
 # A script to run after the build.
 #
@@ -186,7 +215,7 @@ test: ""
 
 pre_deploy: ""
 
-deploy: ""
+deploy: build_and_push_image.py
 
 post_deploy: ""
 
@@ -194,7 +223,7 @@ smoke: ""
 
 pre_destroy: ""
 
-destroy: ""
+destroy: destroy.py
 
 post_destroy: ""
 
