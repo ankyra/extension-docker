@@ -27,13 +27,15 @@ versioned_base_image = base_image_name + ":" + docker_image_version
 
 
 def run_docker(cmd):
+    print "Running '%s'" % " ".join(cmd)
     sys.stdout.flush()
     try:
-        subprocess.check_output(cmd)
+        output = subprocess.check_output(cmd)
     except subprocess.CalledProcessError, e:
         print "Failed to run", cmd
         print e
         sys.exit(1)
+    return output
 
 
 print "Building Docker image '%s'" % versioned_base_image
@@ -42,7 +44,7 @@ cmd = docker_cmd + ["build", "-f", docker_file, "-t", versioned_base_image, "."]
 run_docker(cmd)
 
 print "Tagging '%s:latest'" % base_image_name
-cmd = docker_cmd + ["tag", base_image_name, base_image_name + ":latest"]
+cmd = docker_cmd + ["tag", versioned_base_image, base_image_name + ":latest"]
 try:
     subprocess.check_output(cmd)
 except:

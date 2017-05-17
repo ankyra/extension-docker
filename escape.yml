@@ -103,6 +103,7 @@ inputs:
 
 - id: docker_image_version
   type: string
+  default: $__concat("v", $this.version)
   friendly: Docker Image Version
   description: > 
       The version with which to tag the Docker image.
