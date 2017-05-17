@@ -113,7 +113,9 @@ metadata: {}
 # The files to includes in this release. The files don't have to exist at 
 # build time. Globbing patterns are supported.
 #
-includes: []
+includes:
+- LICENSE
+- README.md
 
 # Errands.
 #
