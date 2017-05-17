@@ -20,7 +20,9 @@ version: '0.1.@'
 
 # An (optional) description for this release.
 #
-description: ""
+description: >
+    This release is made to be extended and can be used to build and push 
+    Docker images based on the Dockerfile of the parent project. 
 
 logo: ""
 
@@ -96,8 +98,21 @@ inputs:
   type: string
   friendly: Docker Image
   description: > 
-      The name of the Docker image to build. Don't specify the repository here
-      (see 'Docker Repository')
+      The name of the Docker image to build. Don't specify the repository 
+      (see 'Docker Repository') or version here (see 'Docker Image Version')
+
+- id: docker_image_version
+  type: string
+  friendly: Docker Image Version
+  description: > 
+      The version with which to tag the Docker image.
+
+- id: docker_file
+  type: string
+  default: Dockerfile
+  friendly: Docker File
+  description: > 
+      The path of the Dockerfile to use.
 
 - id: docker_repository
   type: string
