@@ -5,6 +5,8 @@ import os
 import sys
 import subprocess
 
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
 outputs_path = sys.argv[1]
 
 env = os.environ
@@ -30,7 +32,6 @@ versioned_base_image = base_image_name + ":" + docker_image_version
 
 def run_docker(cmd):
     print "Running '%s'" % " ".join(cmd)
-    sys.stdout.flush()
     try:
         output = subprocess.check_output(cmd)
     except subprocess.CalledProcessError, e:
