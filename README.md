@@ -4,10 +4,38 @@ Please see http://escape.ankyra.io for the full documentation.
 
 Can be used in Escape releases to build and push Docker images
 
+## Usage
+
 ```
 name: my-release
 extends:
 - extension-docker
+inputs:
+
+- id: docker_image
+  default: my_image
+  description: > 
+      The name of the Docker image to build. Don't specify the repository 
+      (see 'Docker Repository') or version here (see 'Docker Image Version')
+
+- id: docker_image_version
+  default: $__concat("v", $this.version)
+  friendly: Docker Image Version
+  description: > 
+      The version with which to tag the Docker image.
+
+- id: docker_file
+  default: Dockerfile
+  friendly: Docker File
+  description: > 
+      The path of the Dockerfile to use.
+
+- id: docker_repository
+  default: ""
+  friendly: Docker Repository
+  description: > 
+      If set the image will be tagged with this repository and
+      pushed on every successful build.
 ```
 
 ## License
