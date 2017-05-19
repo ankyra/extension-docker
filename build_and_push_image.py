@@ -21,7 +21,9 @@ if not os.path.exists(docker_file):
 
 base_image_name = docker_image
 if should_push:
-    base_image_name = docker_repo + "/" + base_image_name
+    if not docker_repo.endswith("/"):
+        docker_repo = docker_repo + "/"
+    base_image_name = docker_repo + base_image_name
 
 versioned_base_image = base_image_name + ":" + docker_image_version
 
