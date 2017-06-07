@@ -15,8 +15,9 @@ dependencies:
 
 compile:
   override:
-  - escape state create
-  - escape state create --deploy
+  - escape state create -v docker_image=test
+  - escape state create --deploy -v docker_image=test
+  - echo "from alpine" > Dockerfile
   - escape release
 
 test:
