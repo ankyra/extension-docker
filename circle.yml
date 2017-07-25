@@ -1,24 +1,16 @@
 machine:
   services:
   - docker
-  environment:
-    ESCAPE_PROJECT: "_"
-    ESCAPE_STORAGE_BACKEND: "escape"
-    ESCAPE_API_SERVER: "https://registry.ankyra.io"
 
 dependencies:
   pre:
-  - curl https://storage.googleapis.com/escape-releases-eu/escape-v0.10.3.tgz > escape.tgz
-  - rm -rf escape && tar -xvzf escape.tgz
-  - mv escape /home/ubuntu/bin
-  - escape version
+  - curl https://storage.googleapis.com/escape-releases-eu/escape-v0.14.5.tgz > /home/ubuntu/bin/escape.tgz
+  - tar -C /home/ubuntu/bin -xvzf /home/ubuntu/bin/escape.tgz
 
 compile:
   override:
-  - escape state create -v docker_image=test
-  - escape state create --deploy -v docker_image=test
   - echo "from alpine" > Dockerfile
-  - escape release
+  - escape release -v docker_image=test
 
 test:
   override:
