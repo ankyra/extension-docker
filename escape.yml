@@ -139,7 +139,14 @@ inputs:
 - id: docker_password
   default: ""
   friendly: Docker Password
-  description: The Docker password to use for login. Leave blank to skip.
+  description: The Docker password to use for login. Only used when
+      `docker_username` is not blank.
+
+- id: docker_email
+  default: ""
+  friendly: Docker Email
+  description: The Docker email to use for login. Leave blank to skip. Only
+      used when `docker_username` is not blank.
 
 # Output variables (see input variables for documentation)
 #

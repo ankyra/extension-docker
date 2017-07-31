@@ -16,6 +16,7 @@ docker_file = env['INPUT_docker_file']
 docker_repo = env['INPUT_docker_repository']
 docker_username = env['INPUT_docker_username']
 docker_password = env['INPUT_docker_password']
+docker_email = env['INPUT_docker_email']
 should_push = docker_repo != ''
 should_login = should_push and docker_username != ''
 docker_cmd = json.loads(env['INPUT_docker_cmd'])
@@ -44,7 +45,10 @@ def run_docker(cmd):
     return output
 
 if should_login:
-    run_docker(docker_cmd + ["login", "--username", docker_username, "--password", docker_password])
+    cmd = docker_cmd + ["login", "--username", docker_username, "--password", docker_password]
+    if docker_email != '':
+        cmd += ["--email", docker_email]
+    run_docker(cmd)
 
 print "Building Docker image '%s'" % versioned_base_image
 
