@@ -16,7 +16,7 @@ name: extension-docker
 # Build the next path release in the 1.1.* series:
 #   version: 1.1.@
 #
-version: '0.1.@'
+version: '0.2.@'
 
 # An (optional) description for this release.
 #
@@ -131,6 +131,15 @@ inputs:
       The Docker command to use (['docker'] by default). On GCP a value of
       ['gcloud', 'docker', '--'] is recommended.
 
+- id: docker_username
+  default: ""
+  friendly: Docker Username
+  description: The Docker username to use for login. Leave blank to skip.
+
+- id: docker_password
+  default: ""
+  friendly: Docker Password
+  description: The Docker password to use for login. Leave blank to skip.
 
 # Output variables (see input variables for documentation)
 #
