@@ -61,7 +61,7 @@ try:
     subprocess.check_output(cmd)
 except:
     # Fallback for Docker <1.10
-    cmd = docker_cmd + ["tag", "-f", base_image_name, base_image_name + ":latest"]
+    cmd = docker_cmd + ["tag", "-f", versioned_base_image, base_image_name + ":latest"]
     run_docker(cmd)
 
 if should_push:
