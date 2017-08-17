@@ -48,7 +48,8 @@ extends: []
 # To resolve the latest path release:
 #   depends: [archive-example-v0.1.@]
 #
-depends: []
+depends:
+- stdlib-latest
 
 # The release can consume zero or more providers from the environment its
 # deployed in.

@@ -4,8 +4,8 @@ import json
 import os
 import sys
 import subprocess
-
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+sys.path = ["deps/_/stdlib"] + sys.path
+import escape
 
 outputs_path = sys.argv[1]
 
