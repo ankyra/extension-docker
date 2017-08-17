@@ -16,7 +16,7 @@ name: extension-docker
 # Build the next path release in the 1.1.* series:
 #   version: 1.1.@
 #
-version: '0.2.@'
+version: '0.3.@'
 
 # An (optional) description for this release.
 #
