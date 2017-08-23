@@ -1,269 +1,85 @@
-# The build name. Format: /[a-zA-Z]+[a-zA-Z0-9-]*/
-#
 name: extension-docker
+version: 0.3.@
+logo: logo.png
+description: "This release is made to be extended and can be used to build and push  Docker images
+  based on the Dockerfile of the parent project. \n"
 
-# The version. Either specify the full version or use the '@' symbol to 
-# let Escape pick the next version at build time. Format: /[0-9]+(\.[0-9]+)*(\.@)?/
-# 
-# Examples:
-#
-# Build version 1.5:
-#   version: 1.5
-#
-# Build the next minor release in the 1.* series:
-#   version: 1.@
-#
-# Build the next path release in the 1.1.* series:
-#   version: 1.1.@
-#
-version: '0.3.@'
-
-# An (optional) description for this release.
-#
-description: >
-    This release is made to be extended and can be used to build and push 
-    Docker images based on the Dockerfile of the parent project. 
-
-logo: ""
-
-extends: []
-
-# Dependencies. Reference dependencies by their full release ID or use
-# the '@' symbol to resolve versions at build time.
-#
-# Examples:
-#
-# Reference the full release ID to pin to a particular version:
-#   depends: [archive-example-v0.1]
-#
-# To always get the latest version of a particular release:
-#   depends: [archive-example-latest]
-#
-# Or:
-#   depends: [archive-example-@]
-#
-# To resolve the latest minor release:
-#   depends: [archive-example-v0.@]
-#
-# To resolve the latest path release:
-#   depends: [archive-example-v0.1.@]
-#
 depends:
 - stdlib-latest
 
-# The release can consume zero or more providers from the environment its
-# deployed in.
-#
-consumes: []
-
-# The release can provide zero or more providers for other releases to 
-# consume at deployment time.
-#
-provides: []
-
-# Input variables. 
-#
-# Examples:
-#
-#   inputs:
-#   - string_input
-#
-#   - id: full_string
-#     description: "A nice description"
-#     friendly: "Friendly variable display name"
-#     type: string
-#
-#   - id: int
-#     type: int
-#
-#   - id: choice_string
-#     type: string
-#     default: first
-#     items:
-#     - first
-#     - second
-#
-# Escape script can be used in the default field to reference values from other 
-# dependencies:
-#
-#   inputs:
-#   - id: example
-#     default: $dependency.outputs.output_variable
-#
-# Supported types are "string" (default), "int", "list" and the special types:
-# "version", "project", "environment" and "deployment" which are automatically 
-# populated by Escape.
-#
-inputs:
-- id: docker_image
-  type: string
-  friendly: Docker Image
-  description: > 
-      The name of the Docker image to build. Don't specify the repository 
-      (see 'Docker Repository') or version here (see 'Docker Image Version')
-
-- id: docker_image_version
-  type: string
-  default: $__concat("v", $this.version)
-  friendly: Docker Image Version
-  description: > 
-      The version with which to tag the Docker image.
-
-- id: docker_file
-  type: string
-  default: Dockerfile
-  friendly: Docker File
-  description: > 
-      The path of the Dockerfile to use.
-
-- id: docker_repository
-  type: string
-  default: ""
-  friendly: Docker Repository
-  description: > 
-      If set the image will be tagged with this repository and
-      pushed on every successful build.
-
-- id: docker_cmd
-  type: list[string]
-  default: ["docker"]
-  friendly: Docker Command
-  description: >
-      The Docker command to use (['docker'] by default). On GCP a value of
-      ['gcloud', 'docker', '--'] is recommended.
-
-- id: docker_username
-  default: ""
-  friendly: Docker Username
-  description: The Docker username to use for login. Leave blank to skip.
-
-- id: docker_password
-  default: ""
-  friendly: Docker Password
-  description: The Docker password to use for login. Only used when
-      `docker_username` is not blank.
-
-- id: docker_email
-  default: ""
-  friendly: Docker Email
-  description: The Docker email to use for login. Leave blank to skip. Only
-      used when `docker_username` is not blank.
-
-- id: docker_server
-  default: ""
-  friendly: Docker Server
-  description: > 
-      The Docker server to login to. Only used docker_username is not
-      blank. Example: https://eu.gcr.io
-
-# Output variables (see input variables for documentation)
-#
-outputs:
-- id: image
-  type: string
-  friendly: Docker Image
-  description: >
-      The Docker image that this release produces. If docker_repository is set the 
-      value will be included. 
-
-# Metadata key value pairs.
-#
-# Escape script can be used as values, but note that the metadata is compiled
-# at build time, so dependency inputs and outputs can't be referenced.
-# 
-# Example:
-#
-#   metadata:
-#     author: Fictional Character
-#     co_author: $dependency.metadata.author
-#
-metadata: {}
-
-# The files to includes in this release. The files don't have to exist at 
-# build time. Globbing patterns are supported.
-#
 includes:
 - LICENSE
 - README.md
 
-# Errands.
-#
-# Errands are scripts that can be run against the deployment of this release.
-# The scripts receive the deployment's inputs and outputs as environment
-# variables.
-#
-# Examples:
-#
-#   errands:
-#     my-errand:
-#       description: "Run this errand to do something special"
-#       script: bin/my_errand.sh
-#       inputs:
-#       - extra_input
-#
-# For information on the syntax of the input variables see the "inputs" field.
-#
-errands: {}
+inputs:
+- id: docker_image
+  description: |
+    The name of the Docker image to build. Don't specify the repository  (see
+    'Docker Repository') or version here (see 'Docker Image Version')
+  friendly: Docker Image
+  type: string
 
-templates: []
+- id: docker_image_version
+  default: $__concat("v", $this.version)
+  description: |
+    The version with which to tag the Docker image.
+  friendly: Docker Image Version
+  type: string
 
-path: ""
+- id: docker_file
+  default: Dockerfile
+  description: |
+    The path of the Dockerfile to use.
+  friendly: Docker File
+  type: string
 
-# A script to run before the build.
-#
-# The script has access to the input variables (prepended with INPUT_)
-# in the environment.
-#
-# Examples:
-#
-# Given the escape plan:
-#
-#   inputs:
-#    - test_input
-#   pre_build: pre_build.sh
-#
-# We can get the value of the input variable in pre_build.sh:
-#
-#   echo $INPUT_test_input
-#
-pre_build: ""
+- id: docker_repository
+  default: ""
+  description: |
+    If set the image will be tagged with this repository and pushed on every
+    successful build.
+  friendly: Docker Repository
+  type: string
+
+- id: docker_cmd
+  default:
+  - docker
+  description: |
+    The Docker command to use (['docker'] by default). On GCP a value of
+    ['gcloud', 'docker', '--'] is recommended.
+  friendly: Docker Command
+  type: list[string]
+
+- id: docker_username
+  default: ""
+  description: The Docker username to use for login. Leave blank to skip.
+  friendly: Docker Username
+
+- id: docker_password
+  default: ""
+  description: The Docker password to use for login. Only used when `docker_username`
+    is not blank.
+  friendly: Docker Password
+
+- id: docker_email
+  default: ""
+  description: The Docker email to use for login. Leave blank to skip. Only used when
+    `docker_username` is not blank.
+  friendly: Docker Email
+
+- id: docker_server
+  default: ""
+  description: |
+    The Docker server to login to. Only used docker_username is not blank. Example: https://eu.gcr.io
+  friendly: Docker Server
+
+outputs:
+- id: image
+  description: "The Docker image that this release produces. If docker_repository
+    is set the  value will be included. \n"
+  friendly: Docker Image
+  type: string
 
 build: build_and_push_image.py
-
-# A script to run after the build.
-#
-# The script has access to the input variables (prepended with INPUT_) 
-# and output variables (prepended with OUTPUT_) in the environment.
-#
-# Examples:
-#
-# Given the escape plan:
-#
-#   inputs:
-#    - test_input
-#   outputs:
-#   - test_output
-#   post_build: post_build.sh
-#
-# We can get the value of the variables in post_build.sh:
-#
-#   echo $INPUT_test_input $OUTPUT_test_output
-#
-post_build: ""
-
-test: ""
-
-pre_deploy: ""
-
 deploy: build_and_push_image.py
-
-post_deploy: ""
-
-smoke: ""
-
-pre_destroy: ""
-
 destroy: destroy.py
-
-post_destroy: ""
-
