@@ -1,5 +1,5 @@
 name: extension-docker
-version: 0.3.@
+version: 0.4.@
 logo: logo.png
 description: "This release is made to be extended and can be used to build and push  Docker images
   based on the Dockerfile of the parent project. \n"
@@ -72,6 +72,13 @@ inputs:
   description: |
     The Docker server to login to. Only used docker_username is not blank. Example: https://eu.gcr.io
   friendly: Docker Server
+
+- id: docker_import_image
+  default: false
+  type: bool
+  description: |
+    Instead of building a Dockerfile assume the image already exists in the provided 
+    docker_repository.
 
 outputs:
 - id: image
