@@ -1,8 +1,12 @@
 name: extension-docker
-version: 0.4.@
+version: 0.5.@
 logo: logo.png
-description: "This release is made to be extended and can be used to build and push  Docker images
-  based on the Dockerfile of the parent project. \n"
+description: |
+    This release is made to be extended and can be used to build and push
+    Docker images based on the Dockerfile (or `docker_file`) of the parent
+    project. It can also make available existing images from remote
+    repositories, and skip the build and deploy step altogether (see
+    the `import_docker_image` variable)
 
 depends:
 - stdlib-latest
@@ -10,75 +14,86 @@ depends:
 includes:
 - LICENSE
 - README.md
+- imported_image
 
 inputs:
-- id: docker_image
-  description: |
-    The name of the Docker image to build. Don't specify the repository  (see
-    'Docker Repository') or version here (see 'Docker Image Version')
-  friendly: Docker Image
-  type: string
-
-- id: docker_image_version
-  default: $__concat("v", $this.version)
-  description: |
-    The version with which to tag the Docker image.
-  friendly: Docker Image Version
-  type: string
-
-- id: docker_file
-  default: Dockerfile
-  description: |
-    The path of the Dockerfile to use.
-  friendly: Docker File
-  type: string
-
-- id: docker_repository
-  default: ""
-  description: |
-    If set the image will be tagged with this repository and pushed on every
-    successful build.
-  friendly: Docker Repository
-  type: string
-
-- id: docker_cmd
-  default:
-  - docker
-  description: |
-    The Docker command to use (['docker'] by default). On GCP a value of
-    ['gcloud', 'docker', '--'] is recommended.
-  friendly: Docker Command
-  type: list[string]
-
-- id: docker_username
-  default: ""
-  description: The Docker username to use for login. Leave blank to skip.
-  friendly: Docker Username
-
-- id: docker_password
-  default: ""
-  description: The Docker password to use for login. Only used when `docker_username`
-    is not blank.
-  friendly: Docker Password
-
-- id: docker_email
-  default: ""
-  description: The Docker email to use for login. Leave blank to skip. Only used when
-    `docker_username` is not blank.
-  friendly: Docker Email
-
-- id: docker_server
-  default: ""
-  description: |
-    The Docker server to login to. Only used docker_username is not blank. Example: https://eu.gcr.io
-  friendly: Docker Server
-
 - id: docker_import_image
   default: false
   type: bool
   description: |
-    Instead of building a Dockerfile assume the image already exists in the provided 
-    docker_repository.
+    Instead of building a docker image assume the image already exists in the
+    provided `docker_repository`. If this is used at build time the
+    `docker_image`, `docker_image_version` and `docker_repository` values are
+    compiled into the release and can't be overridden at deploy time. 
+
+- id: docker_image
+  friendly: Docker Image
+  default: ""
+  type: string
+  description: |
+    The name of the Docker image to build. Don't specify the repository or the 
+    version here, instead use the 'Docker Repository' and 'Docker Image Version'
+    variables. If `import_docker_image` was used at build time this value will 
+    be ignored at deploy time.
+
+- id: docker_image_version
+  friendly: Docker Image Version
+  type: string
+  default: $__concat("v", $this.version)
+  description: |
+    The version with which to tag the Docker image.  If `import_docker_image`
+    was used at build time this value will be ignored at deploy time.
+
+- id: docker_file
+  friendly: Docker File
+  type: string
+  default: Dockerfile
+  description: |
+    The path of the Dockerfile to use.  Don't forget to add this file to the
+    `includes` section if it's needed at deploy time. If `import_docker_image`
+    is set, or was set at build time, this value be ignored.
+
+- id: docker_repository
+  default: ""
+  friendly: Docker Repository
+  type: string
+  description: |
+    If set the image will be tagged with this repository and pushed on every
+    successful build. If `import_docker_image` was used at build time this value
+    will be ignored at deploy time.
+
+- id: docker_cmd
+  friendly: Docker Command
+  type: list[string]
+  default: [docker]
+  description: |
+    The Docker command to use (['docker'] by default). On GCP a value of
+    ['gcloud', 'docker', '--'] is recommended to ease credentials
+
+- id: docker_username
+  friendly: Docker Username
+  default: ""
+  description: The Docker username to use for login. Leave blank to skip. Not used 
+    when `import_docker_image` is set.
+
+- id: docker_password
+  friendly: Docker Password
+  default: ""
+  description: The Docker password to use for login. Only used when `docker_username`
+    is not blank.
+
+- id: docker_email
+  friendly: Docker Email
+  default: ""
+  description: The Docker email to use for login. Leave blank to skip. Only used when
+    `docker_username` is not blank.
+
+- id: docker_server
+  friendly: Docker Server
+  default: ""
+  description: |
+    The Docker server to login to. Only used docker_username is not blank (e.g.
+    https://eu.gcr.io)
 
 outputs:
 - id: image

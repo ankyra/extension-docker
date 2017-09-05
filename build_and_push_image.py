@@ -21,13 +21,13 @@ should_push = docker_repo != ''
 should_login = docker_username != ''
 docker_cmd = json.loads(env['INPUT_docker_cmd'])
 
-def get_base_image(docker_repo, docker_image, should_push):
+def get_base_image(docker_repo, docker_image, docker_image_version, should_push):
     base_image_name = docker_image
     if should_push:
         if not docker_repo.endswith("/"):
             docker_repo = docker_repo + "/"
         base_image_name = docker_repo + base_image_name
-    return base_image_name
+    return base_image_name, base_image_name + ":" + docker_image_version
 
 
 def run_docker(cmd):
@@ -69,9 +69,18 @@ def build(docker_file, versioned_base_image, docker_cmd, base_image_name):
         cmd = docker_cmd + ["tag", "-f", versioned_base_image, base_image_name + ":latest"]
         run_docker(cmd)
 
+if docker_image == "": 
+    print "Missing value for 'docker_image' variable"
+    sys.exit(1)
 
-base_image_name = get_base_image(docker_repo, docker_image, should_push)
-versioned_base_image = base_image_name + ":" + docker_image_version
+imported = False
+if os.path.exists("imported_image"):
+    versioned_base_image = open("imported_image").read()
+    print "Using imported image", versioned_base_image
+    imported = True
+    import_image = True
+else:
+    base_image_name, versioned_base_image = get_base_image(docker_repo, docker_image, docker_image_version, should_push)
 
 if not import_image:
     if should_login:
@@ -82,7 +91,10 @@ if not import_image:
         run_docker(docker_cmd + ["push", versioned_base_image])
         run_docker(docker_cmd + ["push", base_image_name + ":latest"])
 else:
-    print "Skipping build, using image:", versioned_base_image
+    if not imported:
+        print "Compile image:", versioned_base_image, "into release"
+        with open("imported_image", "w") as f:
+            f.write(versioned_base_image)
 
 outputs = escape.get_outputs()
 outputs.set_output("image", versioned_base_image)
