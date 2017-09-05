@@ -8,6 +8,10 @@ import subprocess
 outputs_path = sys.argv[1]
 outputs = json.load(open(outputs_path))
 
+if os.path.exists("imported_image"):
+    print "Skipping destroy on imported image"
+    sys.exit(0)
+
 
 if 'image' not in outputs:
     print "Missing 'image' output variable."
