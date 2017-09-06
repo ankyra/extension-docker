@@ -11,6 +11,7 @@ compile:
   override:
   - echo "from alpine" > Dockerfile
   - escape release -v docker_image=test
+  - curl -f -X POST https://circleci.com/api/v1.1/project/github/ankyra/extension-docker-kubespec/tree/master?circle-token=${CIRCLE_DOCKER_ESCAPE_TOKEN}
 
 test:
   override:
