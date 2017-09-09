@@ -74,7 +74,9 @@ if docker_image == "":
     sys.exit(1)
 
 imported = False
-imported_image = open("imported_image").read()
+imported_image = ""
+if os.path.exists("imported_image"):
+    imported_image = open("imported_image").read()
 if imported_image != "":
     versioned_base_image = imported_image
     print "Using imported image", versioned_base_image
