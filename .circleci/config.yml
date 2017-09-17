@@ -1,0 +1,27 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+    - image: ankyra/escape:latest
+
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Docker client
+        command: |
+          set -x
+          VER="17.03.0-ce"
+          curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+          tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+          mv /tmp/docker/* /usr/bin
+    - run:
+        name: Create test Dockerfile
+        command: echo "from alpine" > Dockerfile
+    - run: 
+        name: Build Escape release
+        command: escape release -v docker_image=test
+    - run:
+        name: Trigger extension-docker-kubespec build
+        command: curl -f -X POST https://circleci.com/api/v1.1/project/github/ankyra/extension-docker-kubespec/tree/master?circle-token=${CIRCLE_DOCKER_ESCAPE_TOKEN}
