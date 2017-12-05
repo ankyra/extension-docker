@@ -21,7 +21,10 @@ jobs:
         command: echo "from alpine" > Dockerfile
     - run: 
         name: Build Escape release
-        command: escape run release -v docker_image=test
-    - run:
-        name: Trigger extension-docker-kubespec build
-        command: curl -f -X POST https://circleci.com/api/v1.1/project/github/ankyra/extension-docker-kubespec/tree/master?circle-token=${CIRCLE_DOCKER_ESCAPE_TOKEN}
+        command: |
+          escape run build -v docker_image=test && \
+            escape run test && \
+            if [ "$CIRCLE_BRANCH" = "master" ] ; then
+              escape run release --skip-build -v docker_image=test && \
+              curl -f -X POST https://circleci.com/api/v1.1/project/github/ankyra/extension-docker-kubespec/tree/master?circle-token=${CIRCLE_DOCKER_ESCAPE_TOKEN}
+            fi
