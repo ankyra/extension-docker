@@ -92,7 +92,7 @@ inputs:
   friendly: Docker Server
   default: ""
   description: |
-    The Docker server to login to. Only used docker_username is not blank (e.g.
+    The Docker server to login to. Only used when docker_username is not blank (e.g.
     https://eu.gcr.io)
 
 outputs:
