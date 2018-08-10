@@ -1,0 +1,15 @@
+name: docker-repository-provider
+version: 0.1.@
+description: Provides the likes of `docker-builder` with the means of supporting 
+    different Docker repository providers (the Docker hub, gcr.io, etc.)
+provides: 
+- docker-repository
+
+inputs:
+- id: docker_repository
+  default: ""
+  description: A Docker repository. Can be left blank.
+
+outputs:
+- id: docker_repository
+  default: $this.inputs.docker_repository

@@ -1,0 +1,85 @@
+name: docker-builder
+version: 0.1.@
+logo: logo.png
+description: |
+    This release is made to be extended and can be used to build and push
+    Docker images based on the Dockerfile (or `docker_file`) of the parent
+    project.
+
+depends:
+- stdlib-latest
+
+consumes:
+- docker-repository as repository
+
+includes:
+- LICENSE
+- README.md
+
+inputs:
+- id: docker_image
+  friendly: Docker Image
+  type: string
+  description: |
+    The name of the Docker image to build. Don't specify the repository or the 
+    version here, instead use the 'Docker Repository' and 'Docker Image Version'
+    variables. 
+
+- id: docker_image_version
+  friendly: Docker Image Version
+  type: string
+  default: $__concat("v", $this.version)
+  description: |
+    The version with which to tag the Docker image.  If `import_docker_image`
+    was used at build time this value will be ignored at deploy time.
+
+- id: docker_file
+  friendly: Docker File
+  type: string
+  default: Dockerfile
+  description: |
+    The path of the Dockerfile to use.  Don't forget to add this file to the
+    `includes` section if it's needed at deploy time. If `import_docker_image`
+    is set, or was set at build time, this value be ignored.
+
+- id: docker_repository
+  friendly: Docker Repository
+  visible: false
+  type: string
+  default: $repository.outputs.docker_repository
+
+outputs:
+- id: image
+  friendly: Docker Image
+  default: $__read_file(".docker_image").trim()
+  type: string
+  description: |
+      The Docker image that this release produces. If docker_repository
+      is set the  value will be included.
+
+build:
+  inline: |
+    if [ ! -f "${INPUT_docker_file}" ] ; then
+      echo "Referenced Dockerfile '${INPUT_docker_file}' does not exist."
+      exit 1
+    fi
+    base_image_name="${INPUT_docker_image}"
+    if [ "${INPUT_docker_repository}" != "" ] ; then
+        base_image_name="${INPUT_docker_repository}/${base_image_name}"
+    fi
+    versioned_base_image="${base_image_name}:${INPUT_docker_image_version}"
+    docker build -f "${INPUT_docker_file}" -t "${versioned_base_image}" .
+    if [ "${INPUT_docker_repository}" != "" ] ; then
+        docker push "${versioned_base_image}"
+        docker push "${base_image_name}:latest"
+    fi
+    echo "${versioned_base_image}" > .docker_image
+
+deploy:
+  inline: |
+    base_image_name="${INPUT_docker_image}"
+    if [ "${INPUT_docker_repository}" != "" ] ; then
+        base_image_name="${INPUT_docker_repository}/${base_image_name}"
+    fi
+    versioned_base_image="${base_image_name}:${INPUT_docker_image_version}"
+    echo "${versioned_base_image}" > .docker_image
