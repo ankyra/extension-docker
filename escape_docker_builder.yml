@@ -70,6 +70,7 @@ build:
     fi
     versioned_base_image="${base_image_name}:${INPUT_docker_image_version}"
     docker build -f "${INPUT_docker_file}" -t "${versioned_base_image}" .
+    docker tag "${versioned_base_image}" "${base_image_name}:latest"
     if [ "${INPUT_docker_repository}" != "" ] ; then
         docker push "${versioned_base_image}"
         docker push "${base_image_name}:latest"
