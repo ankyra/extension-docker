@@ -48,10 +48,14 @@ inputs:
   type: string
   default: $repository.outputs.docker_repository
 
+- id: docker_tmp_file
+  default: ".docker_image"
+  visible: false
+
 outputs:
 - id: image
   friendly: Docker Image
-  default: $__read_file(".docker_image").trim()
+  default: $this.inputs.docker_tmp_file.read_file().trim()
   type: string
   description: |
       The Docker image that this release produces. If docker_repository
@@ -75,7 +79,7 @@ build:
         docker push "${versioned_base_image}"
         docker push "${base_image_name}:latest"
     fi
-    echo "${versioned_base_image}" > .docker_image
+    echo "${versioned_base_image}" > "${INPUT_docker_tmp_file}"
 
 deploy:
   inline: |
@@ -86,4 +90,4 @@ deploy:
     fi
     versioned_base_image="${base_image_name}:${INPUT_docker_image_version}"
     echo "Using ${versioned_base_image}"
-    echo "${versioned_base_image}" > .docker_image
+    echo "${versioned_base_image}" > "${INPUT_docker_tmp_file}"
