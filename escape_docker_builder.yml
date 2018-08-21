@@ -30,17 +30,14 @@ inputs:
   type: string
   default: $__concat("v", $this.version)
   description: |
-    The version with which to tag the Docker image.  If `import_docker_image`
-    was used at build time this value will be ignored at deploy time.
+    The version with which to tag the Docker image.  
 
 - id: docker_file
   friendly: Docker File
   type: string
   default: Dockerfile
   description: |
-    The path of the Dockerfile to use.  Don't forget to add this file to the
-    `includes` section if it's needed at deploy time. If `import_docker_image`
-    is set, or was set at build time, this value be ignored.
+    The path of the Dockerfile to use.  
 
 - id: docker_repository
   friendly: Docker Repository
@@ -59,35 +56,7 @@ outputs:
   type: string
   description: |
       The Docker image that this release produces. If docker_repository
-      is set the  value will be included.
+      is set the value will be included.
 
-build:
-  inline: |
-    set -euf
-    if [ ! -f "${INPUT_docker_file}" ] ; then
-      echo "Referenced Dockerfile '${INPUT_docker_file}' does not exist."
-      exit 1
-    fi
-    base_image_name="${INPUT_docker_image}"
-    if [ "${INPUT_docker_repository}" != "" ] ; then
-        base_image_name="${INPUT_docker_repository}/${base_image_name}"
-    fi
-    versioned_base_image="${base_image_name}:${INPUT_docker_image_version}"
-    docker build -f "${INPUT_docker_file}" -t "${versioned_base_image}" .
-    docker tag "${versioned_base_image}" "${base_image_name}:latest"
-    if [ "${INPUT_docker_repository}" != "" ] ; then
-        docker push "${versioned_base_image}"
-        docker push "${base_image_name}:latest"
-    fi
-    echo "${versioned_base_image}" > "${INPUT_docker_tmp_file}"
-
-post_deploy:
-  inline: |
-    set -euf
-    base_image_name="${INPUT_docker_image}"
-    if [ "${INPUT_docker_repository}" != "" ] ; then
-        base_image_name="${INPUT_docker_repository}/${base_image_name}"
-    fi
-    versioned_base_image="${base_image_name}:${INPUT_docker_image_version}"
-    echo "Using ${versioned_base_image}"
-    echo "${versioned_base_image}" > "${INPUT_docker_tmp_file}"
+build: build.sh
+deploy: deploy.sh
