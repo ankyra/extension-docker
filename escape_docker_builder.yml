@@ -81,7 +81,7 @@ build:
     fi
     echo "${versioned_base_image}" > "${INPUT_docker_tmp_file}"
 
-deploy:
+post_deploy:
   inline: |
     set -euf
     base_image_name="${INPUT_docker_image}"
