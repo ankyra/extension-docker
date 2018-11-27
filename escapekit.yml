@@ -1,0 +1,13 @@
+escapekit_version: 1
+build:
+  steps:
+  - escape_plan_location: escape.yml
+    variables:
+      docker_image: test
+  - escape_plan_location: escape_docker_repository.yml
+    variables:
+      docker_repository: ""
+    skip_destroy: true
+  - escape_plan_location: escape_docker_builder.yml
+    variables:
+      docker_image: test
